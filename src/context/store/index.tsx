@@ -3,15 +3,13 @@ import {
   useContext,
   useState,
   ReactNode,
-  useCallback,
-  Children,
+  useEffect,
 } from "react";
 import { api } from "../../services/api";
-import { AxiosResponse } from "axios";
+import { useAuth } from "../auth";
 interface product {
-  id?: number;
+  id: number;
   userId?: number;
-  productId: number;
   name: string;
   category: string;
   price: number;
@@ -20,9 +18,11 @@ interface product {
 
 interface ProductsContextData {
   products: product[];
+  filteredProducts: product[];
   cart: product[];
-  getProducts: () => Promise<void>;
-  getFilteredProducts: (category: string) => Promise<void>;
+  filterProducts: (text: string) => void;
+  addToCart: (product: product) => void;
+  removeFromCart: (id: number) => void;
 }
 
 interface ProductProviderProps {
@@ -45,48 +45,77 @@ const useProductsAndCart = () => {
 
 const ProductProvider = ({ children }: ProductProviderProps) => {
   const [products, setProducts] = useState<product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<product[]>([]);
   const [cart, setCart] = useState<product[]>([]);
 
-  const getProducts = useCallback(async () => {
-    try {
-      const response = await api.get("/products");
-      setProducts(response.data);
-    } catch (err) {
-      console.log(err);
-    }
+  const { accessToken } = useAuth();
+  useEffect(() => {
+    api
+      .get("/products")
+      .then((response) => {
+        setProducts(response.data);
+        getCart();
+      })
+      .catch((err) => console.log(err));
   }, []);
 
-  const getFilteredProducts = useCallback(async (category: string) => {
-    try {
-      const response = await api.get("/products");
-      setProducts(response.data);
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
+  const filterProducts = (text: string) => {
+    api
+      .get(`/products/?category=${text}`)
+      .then((response) => setFilteredProducts(response.data))
+      .catch((err) => console.log(err));
+  };
+
+  const getCart = () => {
+    api
+      .get("/cart", {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => setCart(response.data))
+      .catch((error) => console.log(error));
+  };
+  const addToCart = (product: product) => {
+    api
+      .post("/cart", product, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then((response) => {
+        getCart();
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const removeFromCart = (productId: number) => {
+    api
+      .delete(`/cart/${productId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      .then(() => {
+        getCart();
+      })
+      .catch((error) => console.log(error));
+  };
+
   return (
     <ProductsContext.Provider
       value={{
-        getFilteredProducts,
-        getProducts,
         products,
+        filteredProducts,
         cart,
+        filterProducts,
+        addToCart,
+        removeFromCart,
       }}
     >
-      {Children}
+      {children}
     </ProductsContext.Provider>
   );
 };
 
-// export { useProductsAndCart, ProductProvider };
-
-// const getFilteredProducts = useCallback(async (category: string) => {
-// if (!category) {
-//   const response = await api.get("/products");
-//   setProducs(response);
-// }
-
-//   }, []);
-// return (
-//   <ProductsContext.Provider value={{}}>{Children}</ProductsContext.Provider>
-// );
+export { useProductsAndCart, ProductProvider };

@@ -10,6 +10,7 @@ export const theme = extendTheme({
       0: "#ffffff",
       10: "#f5f5f5",
       100: "#E0E0E0",
+      300: "#BDBDBD",
       500: "#828282",
       1000: "#000000",
     },
@@ -29,7 +30,7 @@ export const theme = extendTheme({
   },
   styles: {
     global: {
-      bg: "#f5f5",
+      bg: "#f5f5f5",
       color: "red.600",
     },
   },
