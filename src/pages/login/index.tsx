@@ -26,7 +26,6 @@ export const Login = () => {
 
   const handleSignIn = (data: FormData) => {
     signIn(data);
-    history.push("/store");
   };
   return (
     <Flex w="100vw" h="100vh" flexDirection="row">

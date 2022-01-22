@@ -3,7 +3,9 @@ import { Logo } from "./logo";
 import { Search } from "../search";
 import { IoLogOut } from "react-icons/io5";
 import { Cart } from "../cart/index";
+import { useAuth } from "../../../context/auth";
 export const Header = () => {
+  const { logOut } = useAuth();
   return (
     <Flex
       mw="100%"
@@ -30,7 +32,12 @@ export const Header = () => {
           <Cart />
           <Search />
 
-          <Button fontSize="22px" color="gray.500" bg="gray.10">
+          <Button
+            fontSize="22px"
+            color="gray.500"
+            bg="gray.10"
+            onClick={logOut}
+          >
             <IoLogOut />
           </Button>
         </Flex>

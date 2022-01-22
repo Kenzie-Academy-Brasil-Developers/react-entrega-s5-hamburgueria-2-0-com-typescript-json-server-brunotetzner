@@ -6,7 +6,8 @@ import {
   useCallback,
 } from "react";
 import { api } from "../../services/api";
-
+import { useHistory } from "react-router";
+import { access } from "fs";
 interface User {
   name: string;
   id: number;
@@ -17,6 +18,7 @@ interface AuthContextData {
   user: User;
   accessToken: string;
   signIn: (credentials: SignInCredentials) => Promise<void>;
+  logOut: () => void;
 }
 
 interface AuthProviderProps {
@@ -44,9 +46,10 @@ const useAuth = () => {
 };
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
+  const history = useHistory();
   const [data, setData] = useState<AuthState>(() => {
     const accessToken = localStorage.getItem("@Hamburgueria:accessToken");
-    const user = localStorage.getItem("Hamburgueria:user");
+    const user = localStorage.getItem("@Hamburgueria:user");
 
     if (accessToken && user) {
       return { accessToken, user: JSON.parse(user) };
@@ -60,13 +63,20 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     const { accessToken, user } = response.data;
 
     localStorage.setItem("@Hamburgueria:accessToken", accessToken);
-    localStorage.setItem("Hamburgueria:user", JSON.stringify(user));
+    localStorage.setItem("@Hamburgueria:user", JSON.stringify(user));
     setData({ accessToken, user });
+    history.push("/store");
   }, []);
 
+  const logOut = () => {
+    localStorage.removeItem("@Hamburgueria:accessToken");
+    localStorage.removeItem("@Hamburgueria:user");
+    setData({} as AuthState);
+    history.push("/");
+  };
   return (
     <AuthContext.Provider
-      value={{ signIn, accessToken: data.accessToken, user: data.user }}
+      value={{ signIn, accessToken: data.accessToken, user: data.user, logOut }}
     >
       {children}
     </AuthContext.Provider>
