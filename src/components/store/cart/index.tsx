@@ -12,15 +12,6 @@ import { BsFillCartFill } from "react-icons/bs";
 import { CartCard } from "./cardCart";
 import { useProductsAndCart } from "../../../context/store";
 
-interface product {
-  id: number;
-  userId?: number;
-  name: string;
-  category: string;
-  price: number;
-  img: string;
-}
-
 export const Cart = () => {
   const {
     isOpen: isCartOpen,
@@ -28,13 +19,19 @@ export const Cart = () => {
     onClose: onCartClose,
   } = useDisclosure();
 
-  const { cart } = useProductsAndCart();
+  const { cart, removeFromCart } = useProductsAndCart();
 
   let finalPrice = 0;
   for (let i = 0; i < cart.length; i++) {
     finalPrice += cart[i].price;
   }
 
+  const cleanCard = () => {
+    const ids = cart.map((product) => product.id);
+    for (let i = 0; i < cart.length; i++) {
+      removeFromCart(ids[i]);
+    }
+  };
   return (
     <>
       <Button
@@ -83,6 +80,7 @@ export const Cart = () => {
               </Flex>
             </Flex>
             <Button
+              onClick={cleanCard}
               _hover={{ background: "green.300" }}
               ml="12px"
               w="94.5%"

@@ -11,14 +11,14 @@ import { FaSearch } from "react-icons/fa";
 import { useProductsAndCart } from "../../../context/store";
 import { useState } from "react";
 
-interface ModalCart {
-  isOpen: boolean;
-  isClose: () => void;
-}
 export const Search = () => {
-  const { filterProducts, filteredProducts } = useProductsAndCart();
+  const { filterProducts } = useProductsAndCart();
   const [inputValue, setInputValue] = useState<string>("");
 
+  const buttonClick = () => {
+    filterProducts(inputValue);
+    setInputValue("");
+  };
   const {
     isOpen: isSearchOpen,
     onOpen: onSearchOpen,
@@ -47,7 +47,7 @@ export const Search = () => {
               width="400px"
             />
             <Button
-              onClick={() => filterProducts(inputValue)}
+              onClick={buttonClick}
               w="53px"
               h="40px"
               bg="green.300"

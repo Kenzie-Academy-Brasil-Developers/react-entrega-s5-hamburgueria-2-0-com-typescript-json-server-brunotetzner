@@ -1,7 +1,6 @@
 import { Heading, Flex, Text, Image, Button } from "@chakra-ui/react";
 import { useProductsAndCart } from "../../../context/store";
 import { useAuth } from "../../../context/auth";
-import { useState } from "react";
 interface product {
   id: number;
   userId?: number;
@@ -15,9 +14,8 @@ interface productData {
 }
 
 export const Card = ({ product }: productData) => {
-  const { addToCart, cart } = useProductsAndCart();
+  const { addToCart } = useProductsAndCart();
   const { user } = useAuth();
-  console.log(cart, "carrino");
   product.userId = user.id;
   return (
     <Flex
@@ -29,8 +27,7 @@ export const Card = ({ product }: productData) => {
       border="2px solid"
       borderColor="gray.100"
       paddingBottom="23px"
-      marginBottom="1.2%"
-      marginTop="1.2%"
+      margin="1.2%"
       justifyContent="space-between"
       _hover={{ borderColor: "green.300" }}
     >
@@ -56,7 +53,7 @@ export const Card = ({ product }: productData) => {
         {product.category}
       </Text>
       <Text marginLeft="21px" fontSize="label" color="green.300">
-        Preço: R${product.price}
+        Preço: R${product.price.toFixed(2)}
       </Text>
       <Button
         marginLeft="21px"

@@ -7,7 +7,6 @@ import {
 } from "react";
 import { api } from "../../services/api";
 import { useHistory } from "react-router";
-import { access } from "fs";
 interface User {
   name: string;
   id: number;
@@ -18,6 +17,7 @@ interface AuthContextData {
   user: User;
   accessToken: string;
   signIn: (credentials: SignInCredentials) => Promise<void>;
+  signUp: (credintials: SignUpCredentials) => Promise<void>;
   logOut: () => void;
 }
 
@@ -32,6 +32,12 @@ interface AuthState {
 interface SignInCredentials {
   email: string;
   password: string;
+}
+
+interface SignUpCredentials {
+  email: string;
+  password: string;
+  name: string;
 }
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
@@ -68,6 +74,20 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     history.push("/store");
   }, []);
 
+  const signUp = useCallback(
+    async ({ email, password, name }: SignUpCredentials) => {
+      const responses = await api.post("/register", { email, password, name });
+
+      const { accessToken, user } = responses.data;
+
+      localStorage.setItem("@Hamburgueria:accessToken", accessToken);
+      localStorage.setItem("@Hamburgueria:user", JSON.stringify(user));
+      setData({ accessToken, user });
+      history.push("/store");
+    },
+    []
+  );
+
   const logOut = () => {
     localStorage.removeItem("@Hamburgueria:accessToken");
     localStorage.removeItem("@Hamburgueria:user");
@@ -76,7 +96,13 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   };
   return (
     <AuthContext.Provider
-      value={{ signIn, accessToken: data.accessToken, user: data.user, logOut }}
+      value={{
+        signIn,
+        signUp,
+        accessToken: data.accessToken,
+        user: data.user,
+        logOut,
+      }}
     >
       {children}
     </AuthContext.Provider>

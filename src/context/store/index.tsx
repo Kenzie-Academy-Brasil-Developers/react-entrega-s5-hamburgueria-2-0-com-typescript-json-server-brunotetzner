@@ -14,6 +14,7 @@ interface product {
   category: string;
   price: number;
   img: string;
+  quantity?: number;
 }
 
 interface ProductsContextData {
@@ -23,6 +24,7 @@ interface ProductsContextData {
   filterProducts: (text: string) => void;
   addToCart: (product: product) => void;
   removeFromCart: (id: number) => void;
+  // changeNumberOfProducts:(product:product, add: boolean) => void
 }
 
 interface ProductProviderProps {
@@ -76,6 +78,7 @@ const ProductProvider = ({ children }: ProductProviderProps) => {
       .then((response) => setCart(response.data))
       .catch((error) => console.log(error));
   };
+
   const addToCart = (product: product) => {
     api
       .post("/cart", product, {
@@ -88,6 +91,33 @@ const ProductProvider = ({ children }: ProductProviderProps) => {
       })
       .catch((error) => console.log(error));
   };
+
+  // const changeNumberOfProducts = (product: product, add: boolean) => {
+  //   if (add) {
+  //     // const AddProduct = (product.quantity += 1);
+  //     api.patch(`/cart/${product.id}`, product, {
+  //       headers: {
+  //         Authorization: `Bearer ${accessToken}`,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       getCart();
+  //     })
+  //     .catch((error) => console.log(error));
+
+  //     {
+  //       // const AddProduct = (product.quantity += 1);
+  //     api.patch(`/cart/${product.id}`, product, {
+  //       headers: {
+  //         Authorization: `Bearer ${accessToken}`,
+  //       },
+  //     })
+  //     .then((response) => {
+  //       getCart();
+  //     })
+  //     .catch((error) => console.log(error));
+  //     }
+  //   }
 
   const removeFromCart = (productId: number) => {
     api
@@ -111,6 +141,7 @@ const ProductProvider = ({ children }: ProductProviderProps) => {
         filterProducts,
         addToCart,
         removeFromCart,
+        // changeNumberOfProducts
       }}
     >
       {children}
