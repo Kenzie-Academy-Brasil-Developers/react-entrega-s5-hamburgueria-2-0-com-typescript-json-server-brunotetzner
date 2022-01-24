@@ -7,6 +7,7 @@ import {
 } from "react";
 import { api } from "../../services/api";
 import { useAuth } from "../auth";
+import { toast } from "react-hot-toast";
 interface product {
   id: number;
   userId?: number;
@@ -14,7 +15,7 @@ interface product {
   category: string;
   price: number;
   img: string;
-  quantity?: number;
+  quantity: number;
 }
 
 interface ProductsContextData {
@@ -24,7 +25,9 @@ interface ProductsContextData {
   filterProducts: (text: string) => void;
   addToCart: (product: product) => void;
   removeFromCart: (id: number) => void;
-  // changeNumberOfProducts:(product:product, add: boolean) => void
+  changeNumberOfProducts: (product: product) => void;
+  removeOneProduct: (product: product) => void;
+  addOneProduct: (product: product) => void;
 }
 
 interface ProductProviderProps {
@@ -80,8 +83,31 @@ const ProductProvider = ({ children }: ProductProviderProps) => {
   };
 
   const addToCart = (product: product) => {
+    const names = cart.map((product) => product.name);
+    if (!names.includes(product.name)) {
+      api
+        .post("/cart", product, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+        .then((_) => {
+          toast.success("Adicionado ao carrinho");
+          getCart();
+        })
+        .catch((_) =>
+          toast.error("Erro ao adicionar. Tente novamente ou volte mais tarde")
+        );
+    } else {
+      toast.error(
+        "Já adicionado! Ajuste as unidades que deseja do produto no carrinho"
+      );
+    }
+  };
+
+  const changeNumberOfProducts = (product: product) => {
     api
-      .post("/cart", product, {
+      .patch(`/cart/${product.id}`, product, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
@@ -92,33 +118,6 @@ const ProductProvider = ({ children }: ProductProviderProps) => {
       .catch((error) => console.log(error));
   };
 
-  // const changeNumberOfProducts = (product: product, add: boolean) => {
-  //   if (add) {
-  //     // const AddProduct = (product.quantity += 1);
-  //     api.patch(`/cart/${product.id}`, product, {
-  //       headers: {
-  //         Authorization: `Bearer ${accessToken}`,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       getCart();
-  //     })
-  //     .catch((error) => console.log(error));
-
-  //     {
-  //       // const AddProduct = (product.quantity += 1);
-  //     api.patch(`/cart/${product.id}`, product, {
-  //       headers: {
-  //         Authorization: `Bearer ${accessToken}`,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       getCart();
-  //     })
-  //     .catch((error) => console.log(error));
-  //     }
-  //   }
-
   const removeFromCart = (productId: number) => {
     api
       .delete(`/cart/${productId}`, {
@@ -128,8 +127,23 @@ const ProductProvider = ({ children }: ProductProviderProps) => {
       })
       .then(() => {
         getCart();
+        toast.success("Produto removido do carrinho");
       })
       .catch((error) => console.log(error));
+  };
+
+  const addOneProduct = (product: product) => {
+    product.quantity += 1;
+    changeNumberOfProducts(product);
+  };
+
+  const removeOneProduct = (product: product) => {
+    if (product.quantity === 1) {
+      removeFromCart(product.id);
+    } else {
+      product.quantity -= 1;
+      changeNumberOfProducts(product);
+    }
   };
 
   return (
@@ -141,7 +155,9 @@ const ProductProvider = ({ children }: ProductProviderProps) => {
         filterProducts,
         addToCart,
         removeFromCart,
-        // changeNumberOfProducts
+        changeNumberOfProducts,
+        removeOneProduct,
+        addOneProduct,
       }}
     >
       {children}
