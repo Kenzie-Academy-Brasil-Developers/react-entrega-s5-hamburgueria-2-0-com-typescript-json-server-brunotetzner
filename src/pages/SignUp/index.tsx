@@ -8,6 +8,7 @@ import { FaEnvelope } from "react-icons/fa";
 import { FaLock } from "react-icons/fa";
 import { LogoForm } from "../../components/form/logoForm";
 import { RiShoppingBag3Line } from "react-icons/ri";
+import { BsFillCartFill, BsFillPeopleFill, BsPeopleFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 interface FormData {
   email: string;
@@ -132,7 +133,7 @@ export const SignUp = () => {
             placeholder="nome"
             type="name"
             error={errors.name}
-            icon={FaLock}
+            icon={BsFillPeopleFill}
             {...register("name")}
           />
           <Input

@@ -24,7 +24,6 @@ interface ProductsContextData {
   filterProducts: (text: string) => void;
   addToCart: (product: product) => void;
   removeFromCart: (id: number) => void;
-  // changeNumberOfProducts:(product:product, add: boolean) => void
 }
 
 interface ProductProviderProps {
@@ -80,6 +79,10 @@ const ProductProvider = ({ children }: ProductProviderProps) => {
   };
 
   const addToCart = (product: product) => {
+    const ids = cart.map((product) => product.id);
+    if (ids.includes(product.id)) {
+      console.log(ids);
+    }
     api
       .post("/cart", product, {
         headers: {
@@ -91,33 +94,6 @@ const ProductProvider = ({ children }: ProductProviderProps) => {
       })
       .catch((error) => console.log(error));
   };
-
-  // const changeNumberOfProducts = (product: product, add: boolean) => {
-  //   if (add) {
-  //     // const AddProduct = (product.quantity += 1);
-  //     api.patch(`/cart/${product.id}`, product, {
-  //       headers: {
-  //         Authorization: `Bearer ${accessToken}`,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       getCart();
-  //     })
-  //     .catch((error) => console.log(error));
-
-  //     {
-  //       // const AddProduct = (product.quantity += 1);
-  //     api.patch(`/cart/${product.id}`, product, {
-  //       headers: {
-  //         Authorization: `Bearer ${accessToken}`,
-  //       },
-  //     })
-  //     .then((response) => {
-  //       getCart();
-  //     })
-  //     .catch((error) => console.log(error));
-  //     }
-  //   }
 
   const removeFromCart = (productId: number) => {
     api
@@ -141,7 +117,6 @@ const ProductProvider = ({ children }: ProductProviderProps) => {
         filterProducts,
         addToCart,
         removeFromCart,
-        // changeNumberOfProducts
       }}
     >
       {children}

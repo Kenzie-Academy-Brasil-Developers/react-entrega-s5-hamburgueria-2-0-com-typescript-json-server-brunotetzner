@@ -15,6 +15,7 @@ interface productData {
 
 export const Card = ({ product }: productData) => {
   const { addToCart } = useProductsAndCart();
+
   const { user } = useAuth();
   product.userId = user.id;
   return (
