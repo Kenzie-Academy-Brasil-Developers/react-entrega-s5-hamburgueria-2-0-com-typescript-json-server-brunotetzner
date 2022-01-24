@@ -8,6 +8,7 @@ interface product {
   category: string;
   price: number;
   img: string;
+  quantity: number;
 }
 interface productData {
   product: product;

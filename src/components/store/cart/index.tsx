@@ -23,7 +23,7 @@ export const Cart = () => {
 
   let finalPrice = 0;
   for (let i = 0; i < cart.length; i++) {
-    finalPrice += cart[i].price;
+    finalPrice += cart[i].price * cart[i].quantity;
   }
 
   const cleanCard = () => {
@@ -58,11 +58,7 @@ export const Cart = () => {
               Carrinho de Compras
             </Center>
             {cart.map((product) => (
-              <CartCard
-                name={product.name}
-                image={product.img}
-                id={product.id}
-              />
+              <CartCard product={product} />
             ))}
             <Flex w="96%">
               <Flex

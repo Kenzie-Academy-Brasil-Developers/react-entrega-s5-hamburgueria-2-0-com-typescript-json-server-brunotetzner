@@ -1,11 +1,19 @@
-import { Button, Flex } from "@chakra-ui/react";
+import { Button, Flex, Center } from "@chakra-ui/react";
 import { Logo } from "./logo";
 import { Search } from "../search";
 import { IoLogOut } from "react-icons/io5";
 import { Cart } from "../cart/index";
 import { useAuth } from "../../../context/auth";
+import { useProductsAndCart } from "../../../context/store";
+
 export const Header = () => {
+  const { cart } = useProductsAndCart();
   const { logOut } = useAuth();
+
+  let totalProducts = 0;
+  for (let i = 0; i < cart.length; i++) {
+    totalProducts += 1 * cart[i].quantity;
+  }
   return (
     <Flex
       mw="100%"
@@ -29,7 +37,22 @@ export const Header = () => {
           alignItems="center"
           justifyContent="space-around"
         >
-          <Cart />
+          <Center position="relative">
+            <Cart />
+            <Center
+              height="18px"
+              borderRadius="10px"
+              bg="green.300"
+              color="gray.0"
+              paddingLeft="2px"
+              paddingRight="2px"
+              position="absolute"
+              left="35px"
+              bottom="20px"
+            >
+              {totalProducts}
+            </Center>
+          </Center>
           <Search />
 
           <Button

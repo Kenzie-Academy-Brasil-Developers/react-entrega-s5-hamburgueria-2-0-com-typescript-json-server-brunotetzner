@@ -7,6 +7,7 @@ import {
 } from "react";
 import { api } from "../../services/api";
 import { useHistory } from "react-router";
+
 interface User {
   name: string;
   id: number;
